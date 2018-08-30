@@ -5,7 +5,8 @@ class DisablePublicInstitutes extends StudIPPlugin implements SystemPlugin
     public function __construct()
     {
         parent::__construct();
-        if (Request::get("again") !== "yes"
+
+        if ($GLOBALS['auth']->auth['uid'] !== "form"
                 && ($_SESSION['SessSemName']['class'] === "inst")
                 && $_SESSION['SessSemName'][1]
                 && !$GLOBALS['perm']->have_perm("autor")) {
@@ -23,8 +24,9 @@ class DisablePublicInstitutes extends StudIPPlugin implements SystemPlugin
 
             foreach ($routes as $route) {
                 if (stripos($_SERVER['REQUEST_URI'], $route) !== false) {
-                    //throw new LoginException();
-                    header("Location: ".URLHelper::getURL($_SERVER['REQUEST_URI'], array('again' => "yes")));
+                    $GLOBALS['auth']->auth["uid"] = "form";
+                    $GLOBALS['sess']->freeze();
+                    header("Location: ".URLHelper::getURL($_SERVER['REQUEST_URI']));
                     die();
                 }
             }
